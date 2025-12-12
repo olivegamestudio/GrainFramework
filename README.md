@@ -2,6 +2,9 @@
 
 Lightweight abstractions for building tick-driven grains/actors with typed messages, outputs, and persistable state, plus a minimal runtime for registering grains and ticking them deterministically. Designed for deterministic loops (games, simulations, headless services) where you want explicit stepping instead of background tasks.
 
+## Why GrainFramework
+GrainFramework keeps your loop in the driver’s seat: you control every tick, outputs stay deterministic, and replayability is trivial. Messages, outputs, events, and state are all typed so you don’t lose intent to stringly APIs. There are no surprise background threads or schedulers, making it a natural fit for games, simulations, and headless services that already have a tight loop. It’s tiny—just a handful of interfaces and a runtime you can swap out—and it works across modern .NET 8 and legacy .NET Framework 4.6.2 hosts. Persistence hooks are built in so you can capture and restore grain state without bolting on another abstraction.
+
 ## Grain basics
 - A grain is a unit of state + behavior you tick from your host loop.
 - Work arrives through `Enqueue(IGrainMessage)`, gets processed in `Tick(deltaTime)`, and is emitted via `DrainOutputs()`.
@@ -98,8 +101,7 @@ grain.RestoreState(snapshot);
 ```
 
 ## Target frameworks
-- net462
-- net8.0-windows
+- netstandard20
 
 ## Development
 - Build locally: `dotnet build`

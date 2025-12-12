@@ -3,9 +3,9 @@ namespace GrainFramework;
 /// <summary>
 /// Deterministic runtime that hosts grains, routes messages, and drains outputs.
 /// </summary>
-public sealed class GrainRuntime : IGrainRuntime
+public class GrainRuntime : IGrainRuntime
 {
-    private readonly Dictionary<GrainId, IGrain> _grains = new();
+    readonly Dictionary<GrainId, IGrain> _grains = new();
 
     /// <inheritdoc />
     public void Register(IGrain grain)
@@ -16,16 +16,16 @@ public sealed class GrainRuntime : IGrainRuntime
         _grains.Add(grain.Id, grain);
 
         if (grain is IGrainLifecycle lifecycle)
+        {
             lifecycle.OnActivated();
+        }
     }
 
     /// <inheritdoc />
-    public bool Contains(GrainId id)
-        => _grains.ContainsKey(id);
+    public bool Contains(GrainId id) => _grains.ContainsKey(id);
 
     /// <inheritdoc />
-    public bool TryGet(GrainId id, out IGrain grain)
-        => _grains.TryGetValue(id, out grain!);
+    public bool TryGet(GrainId id, out IGrain grain) => _grains.TryGetValue(id, out grain!);
 
     /// <inheritdoc />
     public void Enqueue(GrainId target, IGrainMessage message)

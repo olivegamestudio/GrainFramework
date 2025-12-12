@@ -1,7 +1,7 @@
 ﻿<Project Sdk='Microsoft.NET.Sdk'>
 
 	<PropertyGroup>
-		<TargetFrameworks>net462;net8.0-windows</TargetFrameworks>
+		<TargetFramework>netstandard20</TargetFramework>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
 		<LangVersion>latest</LangVersion>
@@ -17,6 +17,7 @@
 	</PropertyGroup>
 
 	<ItemGroup>
+		<PackageReference Include='OliveStudio.MissingAttributes' Version='1.2.0' />
 		<PackageReference Include='MinVer' Version='6.0.0'>
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -25,10 +26,6 @@
 
 	<ItemGroup>
 		<None Include='../README.md' Pack='true' PackagePath='\' />
-	</ItemGroup>
-
-	<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-		<PackageReference Include='OliveStudio.MissingAttributes' Version='1.2.0' />
 	</ItemGroup>
 
 </Project>
