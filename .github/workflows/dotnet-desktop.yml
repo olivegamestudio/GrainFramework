@@ -1,0 +1,39 @@
+name: .NET
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          filter: tree:0
+
+      - name: Get tags
+        run: git fetch --tags origin
+  
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        run: dotnet build --configuration Release --no-restore
+  
+      - name: Publish Nuget
+        shell: pwsh
+        run: |
+          dotnet nuget push '**/*.nupkg' -k $env:NUGET -s https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols
+        env:
+          NUGET: ${{ secrets.NUGET }}
