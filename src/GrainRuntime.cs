@@ -22,6 +22,17 @@ public class GrainRuntime : IGrainRuntime
     }
 
     /// <inheritdoc />
+    public void Unregister(IGrain grain)
+    {
+        _grains.Remove(grain.Id);
+
+        if (grain is IGrainLifecycle lifecycle)
+        {
+            lifecycle.OnDeactivated();
+        }
+    }
+
+    /// <inheritdoc />
     public bool Contains(GrainId id) => _grains.ContainsKey(id);
 
     /// <inheritdoc />

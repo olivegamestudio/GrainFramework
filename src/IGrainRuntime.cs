@@ -12,6 +12,11 @@ public interface IGrainRuntime
     void Register(IGrain grain);
 
     /// <summary>
+    /// Unregister a grain instance with the runtime.
+    /// </summary>
+    void Unregister(IGrain grain);
+
+    /// <summary>
     /// Returns true if a grain with the given id is registered.
     /// </summary>
     bool Contains(GrainId id);
