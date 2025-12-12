@@ -2,5 +2,5 @@
   <Folder Name="/Solution Items/">
     <File Path=".github/workflows/dotnet-desktop.yml" />
   </Folder>
-  <Project Path="GrainFramework.csproj" />
+  <Project Path="src/GrainFramework.csproj" />
 </Solution>

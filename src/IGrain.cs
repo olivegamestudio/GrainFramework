@@ -1,5 +1,8 @@
-﻿namespace GrainFramework;
+namespace GrainFramework;
 
+/// <summary>
+/// Core grain contract: receives messages, advances deterministically per tick, and emits outputs.
+/// </summary>
 public interface IGrain
 {
     GrainId Id { get; }

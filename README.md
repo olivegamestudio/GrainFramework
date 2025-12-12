@@ -1,15 +1,24 @@
 # GrainFramework
 
-Lightweight abstractions for building tick-driven grains/actors with typed messages, outputs, and persistable state.
+Lightweight abstractions for building tick-driven grains/actors with typed messages, outputs, and persistable state, plus a minimal runtime for registering grains and ticking them deterministically. Designed for deterministic loops (games, simulations, headless services) where you want explicit stepping instead of background tasks.
 
-## What it provides
-- `GrainId` strongly typed identifier for routing and logging.
-- `IGrain` core contract with `Enqueue`, `Tick`, and `DrainOutputs` for deterministic stepping.
-- Marker interfaces for your domain types: `IGrainMessage`, `IGrainEvent`, `IGrainOutput`, and `IGrainState`.
-- `IPersistedGrain` adds `CaptureState`/`RestoreState` so grains can snapshot and reload state.
+## Grain basics
+- A grain is a unit of state + behavior you tick from your host loop.
+- Work arrives through `Enqueue(IGrainMessage)`, gets processed in `Tick(deltaTime)`, and is emitted via `DrainOutputs()`.
+- Use `IGrainEvent` for internally generated events, and `IGrainOutput` for external effects you forward to your own transports/loggers/UI.
+- Implement `IPersistedGrain` to capture/restore `IGrainState` snapshots when you need save/load or crash recovery.
+
+## Interfaces at a glance
+- `GrainId` strongly typed identifier for routing/logging.
+- `IGrain` core contract with `Enqueue`, `Tick`, and `DrainOutputs`.
+- `IGrainRuntime` host for registering grains, routing messages, ticking deterministically, and draining all outputs.
+- `GrainRuntime` default implementation with deterministic ordering by `GrainId.Value`.
+- `IGrainLifecycle` optional activation hooks (`OnActivated`, `OnDeactivated`) fired by the runtime.
+- Marker interfaces for your domain types: `IGrainMessage`, `IGrainEvent`, `IGrainOutput`, `IGrainState`.
+- `IPersistedGrain` adds `CaptureState` / `RestoreState` so grains can snapshot and reload state.
 
 ## Install
-- From source: `dotnet add reference GrainFramework.csproj`
+- From source: `dotnet add reference src/GrainFramework.csproj`
 - From NuGet (when published): `dotnet add package GrainFramework`
 
 ## Quick start
@@ -60,6 +69,37 @@ public sealed record CounterState(int Value) : IGrainState;
 ```
 
 Call `Enqueue` to stage work, step the grain via `Tick(deltaTime)`, then read external effects from `DrainOutputs()`. If persistence is required, capture a snapshot before shutdown and call `RestoreState` when rebuilding the grain.
+
+## Runtime host
+Use `GrainRuntime` when you want to register multiple grains, route messages by id, tick them in a deterministic order, and gather outputs in one pass.
+```csharp
+var runtime = new GrainRuntime();
+var grain = new CounterGrain(new GrainId("counter-1"));
+
+runtime.Register(grain);
+runtime.Enqueue(grain.Id, new Increment(5));
+
+// drive from your game/sim/main loop or a timer
+runtime.TickAll(TimeSpan.FromMilliseconds(16));
+
+foreach (var output in runtime.DrainAllOutputs())
+{
+    // route to network/UI/logging/etc.
+}
+```
+
+`GrainRuntime` calls `OnActivated` on grains that implement `IGrainLifecycle` when they are registered. `OnDeactivated` is available for hosts that support teardown.
+
+## Persistence hook
+```csharp
+var snapshot = grain.CaptureState();
+// serialize snapshot to disk or a database...
+grain.RestoreState(snapshot);
+```
+
+## Target frameworks
+- net462
+- net8.0-windows
 
 ## Development
 - Build locally: `dotnet build`

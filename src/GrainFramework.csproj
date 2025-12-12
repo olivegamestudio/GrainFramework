@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk='Microsoft.NET.Sdk'>
 
 	<PropertyGroup>
 		<TargetFrameworks>net462;net8.0-windows</TargetFrameworks>
@@ -8,22 +8,27 @@
 		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
 		<Authors>Simon Jefferies</Authors>
 		<Company>Simon Jefferies</Company>
-		<Description>Lightweight grain/actor interfaces for tick-driven simulations with typed messages, outputs, and persistence hooks.</Description>
+		<Description>Lightweight grain/actor interfaces and deterministic runtime for tick-driven simulations with typed messages, outputs, lifecycle, and persistence hooks.</Description>
 		<PackageTags>grain;grains;actor;actors;simulation;tick;messaging;state;persistence</PackageTags>
 		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
 		<IncludeSymbols>true</IncludeSymbols>
 		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="MinVer" Version="6.0.0">
+		<PackageReference Include='MinVer' Version='6.0.0'>
 		  <PrivateAssets>all</PrivateAssets>
 		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
 	</ItemGroup>
 
+	<ItemGroup>
+		<None Include='../README.md' Pack='true' PackagePath='\' />
+	</ItemGroup>
+
 	<ItemGroup Condition="'$(TargetFramework)' == 'net462'">
-		<PackageReference Include="OliveStudio.MissingAttributes" Version="1.2.0" />
+		<PackageReference Include='OliveStudio.MissingAttributes' Version='1.2.0' />
 	</ItemGroup>
 
 </Project>
