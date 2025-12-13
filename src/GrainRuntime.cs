@@ -1,9 +1,9 @@
 namespace GrainFramework;
 
 /// <summary>
-/// Deterministic runtime that hosts grains, routes messages, and drains outputs.
+/// Deterministic runtime that hosts grains, routes messages, drains outputs, and persists state via an <see cref="IGrainStateStore"/>.
 /// </summary>
-public class GrainRuntime : IGrainRuntime
+public class GrainRuntime(IGrainStateStore store) : IGrainRuntime
 {
     readonly Dictionary<GrainId, IGrain> _grains = new();
 
@@ -14,6 +14,15 @@ public class GrainRuntime : IGrainRuntime
             throw new InvalidOperationException($"Grain already registered: {grain.Id}");
 
         _grains.Add(grain.Id, grain);
+
+        // Restore persisted state (Option A)
+        if (grain is IPersistedGrain persisted &&
+            store.TryLoad(grain.Id, out var state))
+        {
+            persisted.RestoreState(state);
+
+            persisted.MarkClean();
+        }
 
         if (grain is IGrainLifecycle lifecycle)
         {
@@ -45,6 +54,19 @@ public class GrainRuntime : IGrainRuntime
             throw new KeyNotFoundException($"Grain not found: {target}");
 
         grain.Enqueue(message);
+    }
+
+    /// <inheritdoc />
+    public virtual void SaveAll()
+    {
+        foreach (var grain in _grains.Values)
+        {
+            if (grain is IPersistedGrain persisted && persisted.IsDirty)
+            {
+                store.Save(grain.Id, persisted.CaptureState());
+                persisted.MarkClean();
+            }
+        }
     }
 
     /// <inheritdoc />

@@ -2,7 +2,8 @@
 
 /// <summary>
 /// Hosts grains, delivers messages, advances them deterministically via ticks,
-/// and exposes their outputs.
+/// and exposes their outputs. Implementations may also restore and persist grain
+/// state via an <see cref="IGrainStateStore"/>.
 /// </summary>
 public interface IGrainRuntime
 {
@@ -15,6 +16,11 @@ public interface IGrainRuntime
     /// Unregister a grain instance with the runtime.
     /// </summary>
     void Unregister(IGrain grain);
+
+    /// <summary>
+    /// Save the state of all persisted grains via the configured state store.
+    /// </summary>
+    void SaveAll();
 
     /// <summary>
     /// Returns true if a grain with the given id is registered.

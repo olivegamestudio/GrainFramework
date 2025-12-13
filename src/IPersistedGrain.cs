@@ -1,17 +1,29 @@
 namespace GrainFramework;
 
 /// <summary>
-/// A grain that can capture and restore its state for persistence.
+/// Grain contract for persistence integration.
 /// </summary>
-public interface IPersistedGrain : IGrain
+public interface IPersistedGrain
 {
     /// <summary>
-    /// Capture a snapshot of the current state for persistence.
+    /// Capture the current state of the grain for persistence.
     /// </summary>
-    IGrainState CaptureState();
+    /// <returns>Serializable state object.</returns>
+    object CaptureState();
 
     /// <summary>
-    /// Restore state from a previously captured snapshot.
+    /// Restore the grain's state from previously captured data.
     /// </summary>
-    void RestoreState(IGrainState state);
+    /// <param name="state">State object produced by <see cref="CaptureState"/>.</param>
+    void RestoreState(object state);
+
+    /// <summary>
+    /// Indicates whether the grain's state has been modified since the last persistence operation.
+    /// </summary>
+    bool IsDirty { get; }
+
+    /// <summary>
+    /// Clears the dirty flag, indicating that the grain's state is now in sync with the persisted state.
+    /// </summary>
+    void MarkClean();
 }
